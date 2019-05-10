@@ -1,6 +1,6 @@
 # puppeteer-lottie
 
-> Renders [Lottie](http://airbnb.io/lottie) animations via [Puppeteer](https://github.com/GoogleChrome/puppeteer) to image, GIF or MP4.
+> Renders [Lottie](http://airbnb.io/lottie) animations via [Puppeteer](https://github.com/GoogleChrome/puppeteer) to **image**, **GIF** or **MP4**.
 
 [![NPM](https://img.shields.io/npm/v/puppeteer-lottie.svg)](https://www.npmjs.com/package/puppeteer-lottie) [![Build Status](https://travis-ci.com/transitive-bullshit/puppeteer-lottie.svg?branch=master)](https://travis-ci.com/transitive-bullshit/puppeteer-lottie) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
