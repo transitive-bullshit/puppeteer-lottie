@@ -26,11 +26,11 @@ const injectLottie = `
  *
  * You must pass either `path` or `animationData` to specify the Lottie animation.
  *
- * `output` may be any of the following:
- *   - an image to capture the first frame only (png or jpg)
- *   - an image pattern (eg. sprintf format 'frame-%d.png' or 'frame-%012d.jpg')
- *   - an mp4 video file (requires FFmpeg to be installed)
- *   - a GIF file (requires Gifski to be installed)
+ * `output` must be one of the following:
+ *   - An image to capture the first frame only (png or jpg)
+ *   - An image pattern (eg. sprintf format 'frame-%d.png' or 'frame-%012d.jpg')
+ *   - An mp4 video file (requires FFmpeg to be installed)
+ *   - A GIF file (requires Gifski to be installed)
  *
  * @name renderLottie
  * @function
@@ -344,7 +344,7 @@ ${inject.body || ''}
     await ffmpegP
 
     if (spinnerF) {
-      spinnerF.success()
+      spinnerF.succeed()
     }
   } else if (isGif) {
     const spinnerG = !quiet && ora(`Generating GIF with Gifski`).start()
@@ -367,7 +367,7 @@ ${inject.body || ''}
     await execa.shell(cmd)
 
     if (spinnerG) {
-      spinnerG.success()
+      spinnerG.succeed()
     }
   }
 
