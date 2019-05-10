@@ -109,6 +109,14 @@ Type: `function (opts): Promise`
         -   `opts.inject.body` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Optionally injected into the document <body>
     -   `opts.browser` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Optional puppeteer instance to reuse
 
+## Compatibility
+
+All [lottie-web](https://github.com/airbnb/lottie-web) features should be fully supported by the `svg`, `canvas`, and `html` renderers.
+
+This includes all of the animations on [lottiefiles.com](https://lottiefiles.com/)! 🔥
+
+Also see Lottie's full list of [supported features](https://airbnb.io/lottie/#/supported-features).
+
 ## Related
 
 -   [puppeteer-lottie-cli](https://github.com/transitive-bullshit/puppeteer-lottie-cli) - CLI for this module.
