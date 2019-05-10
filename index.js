@@ -260,13 +260,23 @@ ${inject.body || ''}
 
   if (isMp4) {
     ffmpegP = new Promise((resolve, reject) => {
+      let scale = `scale=${width}:-2`
+
+      if (width % 2 !== 0) {
+        if (height % 2 !== 0) {
+          scale = `scale=-2:${height}`
+        } else {
+          scale = `scale=${width + 1}:-2`
+        }
+      }
+
       const ffmpegArgs = [
         '-v', 'error',
         '-stats',
         '-hide_banner',
         '-y',
         '-f', 'image2pipe', '-c:v', 'png', '-r', fps, '-i', '-',
-        '-vf', `scale=${width}:-2`,
+        '-vf', scale,
         '-c:v', 'libx264',
         '-profile:v', 'main',
         '-preset', 'medium',
