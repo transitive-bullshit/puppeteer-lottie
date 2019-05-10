@@ -16,9 +16,19 @@ This module is also available as a [CLI](https://github.com/transitive-bullshit/
 npm install --save puppeteer-lottie
 ```
 
-## Usage
+If you want to generate **GIFs**, you must also install [gifski](https://gif.ski/). On macOS, you can run:
 
-**TODO**
+```bash
+brew install gifski
+```
+
+If you want to generate **MP4s**, you must also install [ffmpeg](https://ffmpeg.org/). On macOS, you can run:
+
+```bash
+brew install ffmpeg
+```
+
+## Usage
 
 ```js
 const renderLottie = require('puppeteer-lottie')
@@ -49,8 +59,6 @@ await renderLottie({
   output: 'preview.jpg'
 })
 ```
-
-Note that all CSS styles are specified via the [JS CSS syntax](https://www.w3schools.com/jsref/dom_obj_style.asp), which uses camelCase instead of hyphens. This is, for instance, what [React](https://reactjs.org/docs/dom-elements.html#style) uses for its inline styles.
 
 ## API
 

@@ -24,7 +24,7 @@ const injectLottie = `
 /**
  * Renders the given Lottie animation via Puppeteer.
  *
- * Must pass either `path` or `animationData`.
+ * You must pass either `path` or `animationData` to specify the Lottie animation.
  *
  * `output` may be any of the following:
  *   - an image to capture the first frame only (png or jpg)
