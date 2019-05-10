@@ -26,7 +26,7 @@ const injectLottie = `
  *
  * Must pass either `path` or `animationData`.
  *
- * `output` may either be any of the following:
+ * `output` may be any of the following:
  *   - an image to capture the first frame only (png or jpg)
  *   - an image pattern (eg. sprintf format 'frame-%d.png' or 'frame-%012d.jpg')
  *   - an mp4 video file (requires FFmpeg to be installed)
