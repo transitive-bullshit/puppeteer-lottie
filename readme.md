@@ -1,11 +1,11 @@
 # puppeteer-lottie
 
-> Render [lottie](http://airbnb.io/lottie) animations via [Puppeteer](https://github.com/GoogleChrome/puppeteer) to PNGs, GIF or MP4.
+> Render [Lottie](http://airbnb.io/lottie) animations via [Puppeteer](https://github.com/GoogleChrome/puppeteer) to image, GIF or MP4.
 
 [![NPM](https://img.shields.io/npm/v/puppeteer-lottie.svg)](https://www.npmjs.com/package/puppeteer-lottie) [![Build Status](https://travis-ci.com/transitive-bullshit/puppeteer-lottie.svg?branch=master)](https://travis-ci.com/transitive-bullshit/puppeteer-lottie) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 <p align="center">
-  <img width="502" alt="Logo" src="https://raw.githubusercontent.com/transitive-bullshit/puppeteer-lottie/master/media/logo.png">
+  <img width="100%" alt="Logo" src="https://raw.githubusercontent.com/transitive-bullshit/puppeteer-lottie/master/media/logo.gif">
 </p>
 
 This module is also available as a [CLI](https://github.com/transitive-bullshit/puppeteer-lottie-cli).
@@ -23,39 +23,35 @@ npm install --save puppeteer-lottie
 ```js
 const renderLottie = require('puppeteer-lottie')
 
-// render text with built-in font and no word-wrap
-await renderrenderLottie({
-  text: 'hello world',
-  output: 'out0.png',
-  style: {
-    fontFamily: 'segue ui',
-    fontSize: 64
-  }
+// Create an MP4 from a lottie animation
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'example.mp4'
 })
 
-// render text with custom google font and word-wrap at 400px
-await renderText({
-  text: 'headless chrome is awesome',
-  output: 'out1.png',
-  loadGoogleFont: true,
-  width: 400,
-  style: {
-    fontFamily: 'Roboto',
-    fontSize: 32,
-    padding: 16
-  }
+// Create a GIF with width 640px from a lottie animation
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'example.gif',
+  width: 640
 })
 
-// render html with custom google font and custom word-wrap at 100px
-await renderText({
-  text: 'headless <b>chrome</b> is <span style="color: red: font-style: italic;">awesome</span>',
-  output: 'out1.png',
-  loadGoogleFont: true,
-  width: 100,
-  style: {
-    fontFamily: 'Roboto',
-    overflowWrap: 'break-word'
-  }
+// Render each frame of the animation as PNG images with height 128px
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'frame-%d.png', // sprintf format
+  height: 128
+})
+
+// Render the first frame of the animation as a JPEG with specific dimensions
+// Note: the lottie-web renderer defaults to 'xMidyMid meet' so the resulting
+// image will retain its original aspect ratio in the middle of the viewport and
+// be padded with whitespace (or transparent regions if using png)
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'preview.jpg',
+  width: 640,
+  height: 480
 })
 ```
 

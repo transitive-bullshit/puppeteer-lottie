@@ -2,11 +2,14 @@
 
 const fs = require('fs-extra')
 const execa = require('execa')
+const ora = require('ora')
 const ow = require('ow')
 const path = require('path')
+const pluralize = require('pluralize')
 const puppeteer = require('puppeteer')
 const tempy = require('tempy')
-const util = require('util')
+const { spawn } = require('child_process')
+const { sprintf } = require('sprintf-js')
 
 const { cssifyObject } = require('css-in-js-utils')
 
@@ -23,24 +26,34 @@ const injectLottie = `
  *
  * Must pass either `path` or `animationData`.
  *
+ * `output` may either be any of the following:
+ *   - an image to capture the first frame only (png or jpg)
+ *   - an image pattern (eg. sprintf format 'frame-%d.png' or 'frame-%012d.jpg')
+ *   - an mp4 video file (requires FFmpeg to be installed)
+ *   - a GIF file (requires Gifski to be installed)
+ *
  * @name renderLottie
  * @function
  *
  * @param {object} opts - Configuration options
  * @param {string} opts.output - Path or pattern to store result
  * @param {object} [opts.animationData] - JSON exported animation data
- * @param {string} [opts.path] - Relative path to the animation object
+ * @param {string} [opts.path] - Relative path to the JSON file containing animation data
  * @param {number} [opts.width] - Optional output width
  * @param {number} [opts.height] - Optional output height
+ * @param {object} [opts.jpegQuality=90] - JPEG quality for frames (does nothing if using png)
+ * @param {object} [opts.quiet=false] - Set to true to disable console output
  * @param {number} [opts.deviceScaleFactor=1] - Window device scale factor
  * @param {string} [opts.renderer='svg'] - Which lottie-web renderer to use
- * @param {object} [opts.rendererSettings] - Optional lottie renderer options
- * @param {object} [opts.puppeteerOptions] - Optional puppeteer launch options
+ * @param {object} [opts.rendererSettings] - Optional lottie renderer settings
+ * @param {object} [opts.puppeteerOptions] - Optional puppeteer launch settings
+ * @param {object} [opts.gifskiOptions] - Optional gifski settings (only for GIF outputs)
  * @param {object} [opts.style={}] - Optional JS [CSS styles](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference) to apply to the animation container
  * @param {object} [opts.inject={}] - Optionally injects arbitrary string content into the head, style, or body elements.
  * @param {string} [opts.inject.head] - Optionally injected into the document <head>
  * @param {string} [opts.inject.style] - Optionally injected into a <style> tag within the document <head>
  * @param {string} [opts.inject.body] - Optionally injected into the document <body>
+ * @param {object} [opts.browser] - Optional puppeteer instance to reuse
  *
  * @return {Promise}
  */
@@ -49,15 +62,15 @@ module.exports = async (opts) => {
     output,
     animationData = undefined,
     path: animationPath = undefined,
+    jpegQuality = 90,
+    quiet = false,
     deviceScaleFactor = 1,
     renderer = 'svg',
     rendererSettings = { },
     style = { },
     inject = { },
     puppeteerOptions = { },
-    jpgQuality = 90,
     gifskiOptions = {
-      fps: 10,
       quality: 80,
       fast: false
     }
@@ -117,14 +130,19 @@ module.exports = async (opts) => {
   ow(w, ow.number.integer.positive, 'animationData.w')
   ow(h, ow.number.integer.positive, 'animationData.h')
 
-  if (width) {
-    height = width / aR
-  } else if (height) {
-    width = height * aR
-  } else {
-    width = w
-    height = h
+  if (!(width && height)) {
+    if (width) {
+      height = width / aR
+    } else if (height) {
+      width = height * aR
+    } else {
+      width = w
+      height = h
+    }
   }
+
+  width = width | 0
+  height = height | 0
 
   const html = `
 <html>
@@ -164,10 +182,10 @@ ${inject.body || ''}
 <div id="root"></div>
 
 <script>
-  const animationData = ${JSON.stringify(lottieData)};
-  let animation = null;
-  let duration;
-  let numFrames;
+  const animationData = ${JSON.stringify(lottieData)}
+  let animation = null
+  let duration
+  let numFrames
 
   function onReady () {
     animation = lottie.loadAnimation({
@@ -177,17 +195,17 @@ ${inject.body || ''}
       autoplay: false,
       rendererSettings: ${JSON.stringify(rendererSettings)},
       animationData,
-    });
+    })
 
-    duration = animation.getDuration();
-    numFrames = animation.getDuration(true);
+    duration = animation.getDuration()
+    numFrames = animation.getDuration(true)
 
-    var div = document.createElement('div');
-    div.className = 'ready';
-    document.body.appendChild(div);
+    var div = document.createElement('div')
+    div.className = 'ready'
+    document.body.appendChild(div)
   }
 
-  document.addEventListener('DOMContentLoaded', onReady);
+  document.addEventListener('DOMContentLoaded', onReady)
 </script>
 
 </body>
@@ -197,13 +215,17 @@ ${inject.body || ''}
   // useful for testing purposes
   // fs.writeFileSync('test.html', html)
 
+  const spinnerB = !quiet && ora('Loading browser').start()
+
   const browser = opts.browser || await puppeteer.launch({
     ...puppeteerOptions
   })
   const page = await browser.newPage()
 
-  page.on('console', console.log)
-  page.on('error', console.error)
+  if (!quiet) {
+    page.on('console', console.log.bind(console))
+    page.on('error', console.error.bind(console))
+  }
 
   await page.setViewport({
     deviceScaleFactor,
@@ -221,12 +243,68 @@ ${inject.body || ''}
   const screenshotOpts = {
     omitBackground: true,
     type: frameType,
-    quality: frameType === 'jpeg' ? jpgQuality : undefined
+    quality: frameType === 'jpeg' ? jpegQuality : undefined
+  }
+
+  if (spinnerB) {
+    spinnerB.succeed()
+  }
+
+  const numOutputFrames = isMultiFrame ? numFrames : 1
+  const framesLabel = pluralize('frame', numOutputFrames)
+  const spinnerR = !quiet && ora(`Rendering ${numOutputFrames} ${framesLabel}`).start()
+
+  let ffmpegP
+  let ffmpeg
+  let ffmpegStdin
+
+  if (isMp4) {
+    ffmpegP = new Promise((resolve, reject) => {
+      const ffmpegArgs = [
+        '-v', 'error',
+        '-stats',
+        '-hide_banner',
+        '-y',
+        '-f', 'image2pipe', '-c:v', 'png', '-r', fps, '-i', '-',
+        '-vf', `scale=${width}:-2`,
+        '-c:v', 'libx264',
+        '-profile:v', 'main',
+        '-preset', 'medium',
+        '-crf', '20',
+        '-movflags', 'faststart',
+        '-pix_fmt', 'yuv420p',
+        '-an', output
+      ]
+
+      ffmpeg = spawn(process.env.FFMPEG_PATH || 'ffmpeg', ffmpegArgs)
+      const { stdin, stdout, stderr } = ffmpeg
+
+      if (!quiet) {
+        stdout.pipe(process.stdout)
+      }
+      stderr.pipe(process.stderr)
+
+      stdin.on('error', (err) => {
+        if (err.code !== 'EPIPE') {
+          return reject(err)
+        }
+      })
+
+      ffmpeg.on('exit', async (status) => {
+        if (status) {
+          return reject(new Error(`FFmpeg exited with status ${status}`))
+        } else {
+          return resolve()
+        }
+      })
+
+      ffmpegStdin = stdin
+    })
   }
 
   for (let frame = 1; frame <= numFrames; ++frame) {
     const frameOutputPath = isMultiFrame
-      ? util.format(tempOutput, frame)
+      ? sprintf(tempOutput, frame)
       : tempOutput
 
     // eslint-disable-next-line no-undef
@@ -242,20 +320,41 @@ ${inject.body || ''}
     }
 
     if (isMp4) {
-      // TODO
+      if (ffmpegStdin.writable) {
+        ffmpegStdin.write(screenshot)
+      }
     }
   }
 
   await rootHandle.dispose()
-  await browser.close()
+  if (opts.browser) {
+    await page.close()
+  } else {
+    await browser.close()
+  }
 
-  if (isGif) {
+  if (spinnerR) {
+    spinnerR.succeed()
+  }
+
+  if (isMp4) {
+    const spinnerF = !quiet && ora(`Generating mp4 with FFmpeg`).start()
+
+    ffmpegStdin.end()
+    await ffmpegP
+
+    if (spinnerF) {
+      spinnerF.success()
+    }
+  } else if (isGif) {
+    const spinnerG = !quiet && ora(`Generating GIF with Gifski`).start()
+
     const framePattern = tempOutput.replace('%012d', '*')
     const escapePath = arg => arg.replace(/(\s+)/g, '\\$1')
 
     const params = [
       '-o', escapePath(output),
-      '--fps', gifskiOptions.fps,
+      '--fps', gifskiOptions.fps || fps,
       gifskiOptions.fast && '--fast',
       '--quality', gifskiOptions.quality,
       '--quiet',
@@ -265,10 +364,19 @@ ${inject.body || ''}
     const executable = process.env.GIFSKI_PATH || 'gifski'
     const cmd = [ executable ].concat(params).join(' ')
 
-    console.log(cmd)
     await execa.shell(cmd)
+
+    if (spinnerG) {
+      spinnerG.success()
+    }
+  }
+
+  if (tempDir) {
     await fs.remove(tempDir)
   }
 
-  return html
+  return {
+    numFrames,
+    duration
+  }
 }

@@ -1,7 +1,7 @@
 {
   "name": "puppeteer-lottie",
   "version": "0.0.0",
-  "description": "Render Lottie animations via Puppeteer to PNGs, GIF, or MP4.",
+  "description": "Render Lottie animations via Puppeteer to image, GIF, or MP4.",
   "main": "index.js",
   "repository": "transitive-bullshit/puppeteer-lottie",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
@@ -26,6 +26,7 @@
   ],
   "devDependencies": {
     "ava": "^1.4.1",
+    "ffmpeg-probe": "^1.0.6",
     "rmfr": "^2.0.0",
     "sharp": "^0.22.1",
     "standard": "^12.0.1",
@@ -35,8 +36,11 @@
     "css-in-js-utils": "^3.0.2",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
+    "ora": "^3.4.0",
     "ow": "^0.12.0",
+    "pluralize": "^7.0.0",
     "puppeteer": "^1.5.0",
+    "sprintf-js": "^1.1.2",
     "tempy": "^0.3.0"
   }
 }
