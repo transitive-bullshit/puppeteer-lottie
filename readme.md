@@ -60,7 +60,9 @@ await renderLottie({
 })
 ```
 
-#### Output Scaling
+#### Output Size
+
+If you don't pass `width` or `height`, the animation's intrinsic size will be used, and if that doesn't exist it will use 640x480.
 
 If you pass `width` or `height`, the other dimension will be inferred by maintaining the original animation's aspect ratio.
 

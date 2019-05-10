@@ -123,7 +123,7 @@ module.exports = async (opts) => {
   }
 
   const fps = lottieData.fr
-  const { w, h } = lottieData
+  const { w = 640, h = 480 } = lottieData
   const aR = w / h
 
   ow(fps, ow.number.integer.positive, 'animationData.fr')

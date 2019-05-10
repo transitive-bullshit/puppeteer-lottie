@@ -104,10 +104,9 @@ test.only('bodymovin.json => mp4', async (t) => {
 
   console.log(output)
   const probe = await ffmpegProbe(output)
-  console.log(probe)
   // height is scaled up a bit because h264 encoder requires an even height
   t.is(probe.width, 1820)
   t.is(probe.height, 276)
 
-  // await fs.remove(output)
+  await fs.remove(output)
 })
