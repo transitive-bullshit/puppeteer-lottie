@@ -1,7 +1,7 @@
 {
   "name": "puppeteer-lottie",
   "version": "0.0.0",
-  "description": "Render Lottie animations via Puppeteer to image, GIF, or MP4.",
+  "description": "Renders Lottie animations via Puppeteer to image, GIF, or MP4.",
   "main": "index.js",
   "repository": "transitive-bullshit/puppeteer-lottie",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
@@ -17,9 +17,13 @@
     "puppeteer",
     "lottie",
     "lottie-web",
+    "bodymovin",
+    "after effects",
     "render",
     "animation",
     "png",
+    "ffmpeg",
+    "gifski",
     "gif",
     "mp4",
     "video"
