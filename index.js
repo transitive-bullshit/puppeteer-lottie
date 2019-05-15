@@ -194,7 +194,7 @@ ${inject.body || ''}
       loop: false,
       autoplay: false,
       rendererSettings: ${JSON.stringify(rendererSettings)},
-      animationData,
+      animationData
     })
 
     duration = animation.getDuration()
@@ -263,7 +263,7 @@ ${inject.body || ''}
       let scale = `scale=${width}:-2`
 
       if (width % 2 !== 0) {
-        if (height % 2 !== 0) {
+        if (height % 2 === 0) {
           scale = `scale=-2:${height}`
         } else {
           scale = `scale=${width + 1}:-2`
@@ -285,6 +285,8 @@ ${inject.body || ''}
         '-pix_fmt', 'yuv420p',
         '-an', output
       ]
+
+      console.log(ffmpegArgs.join(' '))
 
       ffmpeg = spawn(process.env.FFMPEG_PATH || 'ffmpeg', ffmpegArgs)
       const { stdin, stdout, stderr } = ffmpeg
