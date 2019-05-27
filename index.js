@@ -70,6 +70,11 @@ module.exports = async (opts) => {
     style = { },
     inject = { },
     puppeteerOptions = { },
+    ffmpegOptions = {
+      crf: 20,
+      profileVideo: 'main',
+      preset: 'medium'
+    },
     gifskiOptions = {
       quality: 80,
       fast: false
@@ -86,6 +91,23 @@ module.exports = async (opts) => {
   ow(renderer, ow.string.oneOf([ 'svg', 'canvas', 'html' ], 'renderer'))
   ow(rendererSettings, ow.object.plain, 'rendererSettings')
   ow(puppeteerOptions, ow.object.plain, 'puppeteerOptions')
+  ow(ffmpegOptions, ow.object.exactShape({
+    crf: ow.number.is((val) => {
+      return val >= 0 && val <= 51
+    }),
+    profileVideo: ow.string.oneOf(['baseline', 'main', 'high', 'high10', 'high422', 'high444']),
+    preset: ow.string.oneOf([
+      'ultrafast',
+      'superfast',
+      'veryfast',
+      'faster',
+      'fast',
+      'medium',
+      'slow',
+      'slower',
+      'veryslow',
+      'placebo'])
+  }))
   ow(style, ow.object.plain, 'style')
   ow(inject, ow.object.plain, 'inject')
 
@@ -278,9 +300,9 @@ ${inject.body || ''}
         '-f', 'image2pipe', '-c:v', 'png', '-r', fps, '-i', '-',
         '-vf', scale,
         '-c:v', 'libx264',
-        '-profile:v', 'main',
-        '-preset', 'medium',
-        '-crf', '20',
+        '-profile:v', ffmpegOptions.profileVideo,
+        '-preset', ffmpegOptions.preset,
+        '-crf', ffmpegOptions.crf,
         '-movflags', 'faststart',
         '-pix_fmt', 'yuv420p',
         '-an', output

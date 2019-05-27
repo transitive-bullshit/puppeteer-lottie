@@ -99,14 +99,19 @@ test.only('bodymovin.json => mp4', async (t) => {
   await renderLottie({
     path: bodymovin,
     quiet: true,
+    ffmpegOptions: {
+      crf: 22,
+      profileVideo: 'high',
+      preset: 'fast'
+    },
     output
   })
 
-  console.log(output)
   const probe = await ffmpegProbe(output)
   // height is scaled up a bit because h264 encoder requires an even height
   t.is(probe.width, 1820)
   t.is(probe.height, 276)
+  t.is(probe.streams[0].profile, 'High')
 
   await fs.remove(output)
 })
