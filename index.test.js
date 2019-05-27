@@ -98,13 +98,13 @@ test.only('bodymovin.json => mp4', async (t) => {
 
   await renderLottie({
     path: bodymovin,
-    quiet: false,
+    quiet: true,
     ffmpegOptions: {
       crf: 22,
       profileVideo: 'high',
       preset: 'fast'
-   },
-   output
+    },
+    output
   })
 
   const probe = await ffmpegProbe(output)

@@ -72,8 +72,8 @@ module.exports = async (opts) => {
     puppeteerOptions = { },
     ffmpegOptions = {
       crf: 20,
-      profileVideo: "main",
-      preset: "medium"
+      profileVideo: 'main',
+      preset: 'medium'
     },
     gifskiOptions = {
       quality: 80,
@@ -93,10 +93,10 @@ module.exports = async (opts) => {
   ow(puppeteerOptions, ow.object.plain, 'puppeteerOptions')
   ow(ffmpegOptions, ow.object.exactShape({
     crf: ow.number.is((val) => {
-      return val >= 0 &&  val <= 51
+      return val >= 0 && val <= 51
     }),
-    profileVideo: ow.string.oneOf([ 'baseline', 'main', 'high', 'high10', 'high422', 'high444']),
-    preset: ow.string.oneOf([ 
+    profileVideo: ow.string.oneOf(['baseline', 'main', 'high', 'high10', 'high422', 'high444']),
+    preset: ow.string.oneOf([
       'ultrafast',
       'superfast',
       'veryfast',
