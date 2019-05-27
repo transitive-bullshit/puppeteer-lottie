@@ -101,6 +101,8 @@ Type: `function (opts): Promise`
     -   `opts.renderer` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Which lottie-web renderer to use (optional, default `'svg'`)
     -   `opts.rendererSettings` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Optional lottie renderer settings
     -   `opts.puppeteerOptions` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Optional puppeteer launch settings
+    -   `opts.ffmpegOptions` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Optional ffmpeg settings for
+    crf, profileVideo and preset values
     -   `opts.gifskiOptions` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Optional gifski settings (only for GIF outputs)
     -   `opts.style` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Optional JS [CSS styles](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference) to apply to the animation container (optional, default `{}`)
     -   `opts.inject` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Optionally injects arbitrary string content into the head, style, or body elements. (optional, default `{}`)
