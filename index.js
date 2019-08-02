@@ -144,7 +144,7 @@ module.exports = async (opts) => {
     throw new Error('Must pass either "animationData" or "path"')
   }
 
-  const fps = lottieData.fr
+  const fps = ~~lottieData.fr
   const { w = 640, h = 480 } = lottieData
   const aR = w / h
 
