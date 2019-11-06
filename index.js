@@ -2,6 +2,7 @@
 
 const fs = require('fs-extra')
 const execa = require('execa')
+const eventEmitter = require("events").EventEmitter;
 const ora = require('ora')
 const ow = require('ow')
 const path = require('path')
@@ -39,6 +40,7 @@ const injectLottie = `
  * @param {string} opts.output - Path or pattern to store result
  * @param {object} [opts.animationData] - JSON exported animation data
  * @param {string} [opts.path] - Relative path to the JSON file containing animation data
+ * @param {function} [opts.onData] - Optional function to monitor frame data
  * @param {number} [opts.width] - Optional output width
  * @param {number} [opts.height] - Optional output height
  * @param {object} [opts.jpegQuality=90] - JPEG quality for frames (does nothing if using png)
@@ -58,6 +60,8 @@ const injectLottie = `
  * @return {Promise}
  */
 module.exports = async (opts) => {
+  const emitter = new eventEmitter();
+
   const {
     output,
     animationData = undefined,
@@ -85,6 +89,8 @@ module.exports = async (opts) => {
     width = undefined,
     height = undefined
   } = opts
+  
+  emitter.on("data", onData)
 
   ow(output, ow.string.nonEmpty, 'output')
   ow(deviceScaleFactor, ow.number.integer.positive, 'deviceScaleFactor')
@@ -358,6 +364,8 @@ ${inject.body || ''}
         ffmpegStdin.write(screenshot)
       }
     }
+    
+    emitter.emit("data", frame);
   }
 
   await rootHandle.dispose()
