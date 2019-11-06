@@ -66,7 +66,7 @@ module.exports = async (opts) => {
     output,
     animationData = undefined,
     path: animationPath = undefined,
-    onData: () => {},
+    onData = () => {},
     jpegQuality = 90,
     quiet = false,
     deviceScaleFactor = 1,
