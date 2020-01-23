@@ -234,7 +234,7 @@ ${inject.body || ''}
     document.body.appendChild(div)
   }
 
-  document.addEventListener('DOMContentLoaded', onReady)
+  ${inject.onReady || `document.addEventListener('DOMContentLoaded', onReady)`}
 </script>
 
 </body>
