@@ -66,7 +66,7 @@ module.exports = async (opts) => {
     output,
     animationData = undefined,
     path: animationPath = undefined,
-    onData = () => {},
+    onData = undefined,
     jpegQuality = 90,
     quiet = false,
     deviceScaleFactor = 1,
@@ -91,7 +91,7 @@ module.exports = async (opts) => {
     height = undefined
   } = opts
   
-  emitter.on("data", onData)
+  onData && emitter.on("data", onData)
 
   ow(output, ow.string.nonEmpty, 'output')
   ow(deviceScaleFactor, ow.number.integer.positive, 'deviceScaleFactor')
@@ -366,7 +366,7 @@ ${inject.body || ''}
       }
     }
     
-    emitter.emit("data", frame);
+    onData && emitter.emit("data", frame);
   }
 
   await rootHandle.dispose()
