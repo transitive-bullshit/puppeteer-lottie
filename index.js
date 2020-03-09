@@ -297,14 +297,17 @@ ${inject.body || ''}
         '-stats',
         '-hide_banner',
         '-y',
+        '-f', 'lavfi', '-i', `color=c=black:size=${width}x${height}`,
         '-f', 'image2pipe', '-c:v', 'png', '-r', fps, '-i', '-',
-        '-vf', scale,
+        '-filter_complex', `[0:v][1:v]overlay[o];[o]${scale}:flags=bicubic[out]`,
+        '-map', '[out]',
         '-c:v', 'libx264',
         '-profile:v', ffmpegOptions.profileVideo,
         '-preset', ffmpegOptions.preset,
         '-crf', ffmpegOptions.crf,
         '-movflags', 'faststart',
         '-pix_fmt', 'yuv420p',
+        '-frames:v', `${numOutputFrames}`,
         '-an', output
       ]
 
