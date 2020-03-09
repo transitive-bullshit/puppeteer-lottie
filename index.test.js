@@ -4,7 +4,7 @@ const ffmpegProbe = require('ffmpeg-probe')
 const fs = require('fs-extra')
 const path = require('path')
 const test = require('ava')
-const sharp = require('sharp')
+const imageSize = require('image-size')
 const tempy = require('tempy')
 const { sprintf } = require('sprintf-js')
 
@@ -21,11 +21,9 @@ test('bodymovin.json => single frame png', async (t) => {
     output
   })
 
-  const image = await sharp(output).metadata()
+  const image = imageSize(output)
   t.is(image.width, 1820)
   t.is(image.height, 275)
-  t.is(image.channels, 4)
-  t.is(image.format, 'png')
 
   await fs.remove(output)
 })
@@ -40,11 +38,9 @@ test('bodymovin.json => single frame jpg scale=640:-1', async (t) => {
     output
   })
 
-  const image = await sharp(output).metadata()
+  const image = imageSize(output)
   t.is(image.width, 640)
   t.is(image.height, 96)
-  t.is(image.channels, 3)
-  t.is(image.format, 'jpeg')
 
   await fs.remove(output)
 })
@@ -61,11 +57,9 @@ test('bodymovin.json => png frames scale=-1:100', async (t) => {
   })
 
   for (let i = 1; i < 103; ++i) {
-    const image = await sharp(sprintf(output, i)).metadata()
+    const image = imageSize(sprintf(output, i))
     t.is(image.width, 661)
     t.is(image.height, 100)
-    t.is(image.channels, 4)
-    t.is(image.format, 'png')
   }
 
   await fs.remove(output)
@@ -82,12 +76,10 @@ if (!process.env.CI) {
     })
 
     console.log(output)
-    const image = await sharp(output).metadata()
+    const image = imageSize(output)
     console.log(image)
     t.is(image.width, 1820)
     t.is(image.height, 275)
-    t.is(image.channels, 4)
-    t.is(image.format, 'gif')
 
     await fs.remove(output)
   })

@@ -4,17 +4,6 @@ node_js:
 os: linux
 sudo: required
 dist: trusty
-addons:
-  apt:
-    packages:
-    - mesa-utils
-    - xvfb
-    - libgl1-mesa-dri
-    - libxi-dev
-    - xserver-xorg-dev
-    - libxext-dev
-    - libglapi-mesa
-    - libosmesa6
 before_install:
   - sudo add-apt-repository ppa:mc3man/trusty-media -y
   - sudo apt-get update -q
