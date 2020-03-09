@@ -93,7 +93,7 @@ if (!process.env.CI) {
   })
 }
 
-test.only('bodymovin.json => mp4', async (t) => {
+test('bodymovin.json => mp4', async (t) => {
   const output = tempy.file({ extension: 'mp4' })
 
   await renderLottie({
@@ -110,7 +110,7 @@ test.only('bodymovin.json => mp4', async (t) => {
   const probe = await ffmpegProbe(output)
   // height is scaled up a bit because h264 encoder requires an even height
   t.is(probe.width, 1820)
-  t.is(probe.height, 276)
+  t.is(probe.height, 274)
   t.is(probe.streams[0].profile, 'High')
 
   await fs.remove(output)
