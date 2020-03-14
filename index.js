@@ -41,6 +41,7 @@ const injectLottie = `
  * @param {string} [opts.path] - Relative path to the JSON file containing animation data
  * @param {number} [opts.width] - Optional output width
  * @param {number} [opts.height] - Optional output height
+ * @param {number} [opts.captureFrame] - Optional specific frame to capture
  * @param {object} [opts.jpegQuality=90] - JPEG quality for frames (does nothing if using png)
  * @param {object} [opts.quiet=false] - Set to true to disable console output
  * @param {number} [opts.deviceScaleFactor=1] - Window device scale factor
@@ -83,7 +84,8 @@ module.exports = async (opts) => {
 
   let {
     width = undefined,
-    height = undefined
+    height = undefined,
+    captureFrame = undefined
   } = opts
 
   ow(output, ow.string.nonEmpty, 'output')
@@ -344,8 +346,11 @@ ${inject.body || ''}
       ? sprintf(tempOutput, frame)
       : tempOutput
 
+    // default to specified frame or loop (should only be useful for single frame)
+    var cframe = captureFrame || frame
+
     // eslint-disable-next-line no-undef
-    await page.evaluate((frame) => animation.goToAndStop(frame, true), frame)
+    await page.evaluate((cframe) => animation.goToAndStop(cframe, true), cframe)
     const screenshot = await rootHandle.screenshot({
       path: isMp4 ? undefined : frameOutputPath,
       ...screenshotOpts

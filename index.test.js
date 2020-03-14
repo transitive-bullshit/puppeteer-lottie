@@ -45,6 +45,24 @@ test('bodymovin.json => single frame jpg scale=640:-1', async (t) => {
   await fs.remove(output)
 })
 
+test('bodymovin.json => single frame[10] jpg scale=640:-1', async (t) => {
+  const output = tempy.file({ extension: 'jpg' })
+
+  await renderLottie({
+    path: bodymovin,
+    quiet: true,
+    width: 640,
+    captureFrame: 10,
+    output
+  })
+
+  const image = imageSize(output)
+  t.is(image.width, 640)
+  t.is(image.height, 96)
+
+  await fs.remove(output)
+})
+
 test('bodymovin.json => png frames scale=-1:100', async (t) => {
   const temp = tempy.directory()
   const output = path.join(temp, 'frame-%d.png')
