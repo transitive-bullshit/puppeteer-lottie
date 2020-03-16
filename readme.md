@@ -58,6 +58,14 @@ await renderLottie({
   path: 'fixtures/bodymovin.json',
   output: 'preview.jpg'
 })
+
+
+// Render the tenth frame of the animation as a JPEG image
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'preview.jpg',
+  captureFrame: 10
+})
 ```
 
 #### Output Size
@@ -95,6 +103,7 @@ Type: `function (opts): Promise`
     -   `opts.path` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Relative path to the JSON file containing animation data
     -   `opts.width` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output width
     -   `opts.height` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output height
+    -   `opts.captureFrame` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional frame number to capture
     -   `opts.jpegQuality` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** JPEG quality for frames (does nothing if using png) (optional, default `90`)
     -   `opts.quiet` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Set to true to disable console output (optional, default `false`)
     -   `opts.deviceScaleFactor` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Window device scale factor (optional, default `1`)
