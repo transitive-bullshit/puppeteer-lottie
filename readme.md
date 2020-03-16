@@ -59,7 +59,6 @@ await renderLottie({
   output: 'preview.jpg'
 })
 
-
 // Render the tenth frame of the animation as a JPEG image
 await renderLottie({
   path: 'fixtures/bodymovin.json',
