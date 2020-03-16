@@ -347,7 +347,7 @@ ${inject.body || ''}
       : tempOutput
 
     // default to specified frame or loop (should only be useful for single frame)
-    var cframe = captureFrame || frame
+    var cframe = !isMultiFrame &&  (captureFrame || frame)
 
     // eslint-disable-next-line no-undef
     await page.evaluate((cframe) => animation.goToAndStop(cframe, true), cframe)
