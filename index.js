@@ -112,12 +112,13 @@ module.exports = async (opts) => {
   ow(inject, ow.object.plain, 'inject')
 
   const ext = path.extname(output).slice(1).toLowerCase()
+  const isApng = (ext === 'apng')
   const isGif = (ext === 'gif')
   const isMp4 = (ext === 'mp4')
   const isPng = (ext === 'png')
   const isJpg = (ext === 'jpg' || ext === 'jpeg')
 
-  if (!(isGif || isMp4 || isPng || isJpg)) {
+  if (!(isApng || isGif || isMp4 || isPng || isJpg)) {
     throw new Error(`Unsupported output format "${output}"`)
   }
 
@@ -126,7 +127,7 @@ module.exports = async (opts) => {
     ? path.join(tempDir, 'frame-%012d.png')
     : output
   const frameType = (isJpg ? 'jpeg' : 'png')
-  const isMultiFrame = isMp4 || /%d|%\d{2,3}d/.test(tempOutput)
+  const isMultiFrame = isApng || isMp4 || /%d|%\d{2,3}d/.test(tempOutput)
 
   let lottieData = animationData
 
@@ -280,36 +281,51 @@ ${inject.body || ''}
   let ffmpeg
   let ffmpegStdin
 
-  if (isMp4) {
+  if (isApng || isMp4) {
     ffmpegP = new Promise((resolve, reject) => {
-      let scale = `scale=${width}:-2`
-
-      if (width % 2 !== 0) {
-        if (height % 2 === 0) {
-          scale = `scale=-2:${height}`
-        } else {
-          scale = `scale=${width + 1}:-2`
-        }
-      }
-
       const ffmpegArgs = [
         '-v', 'error',
         '-stats',
         '-hide_banner',
-        '-y',
-        '-f', 'lavfi', '-i', `color=c=black:size=${width}x${height}`,
-        '-f', 'image2pipe', '-c:v', 'png', '-r', fps, '-i', '-',
-        '-filter_complex', `[0:v][1:v]overlay[o];[o]${scale}:flags=bicubic[out]`,
-        '-map', '[out]',
-        '-c:v', 'libx264',
-        '-profile:v', ffmpegOptions.profileVideo,
-        '-preset', ffmpegOptions.preset,
-        '-crf', ffmpegOptions.crf,
-        '-movflags', 'faststart',
-        '-pix_fmt', 'yuv420p',
+        '-y'
+      ]
+
+      if (isApng) {
+        ffmpegArgs.push(
+          '-f', 'image2pipe', '-c:v', 'png', '-r', `${fps}`, '-i', '-',
+          '-plays', '0'
+        )
+      }
+
+      if (isMp4) {
+        let scale = `scale=${width}:-2`
+
+        if (width % 2 !== 0) {
+          if (height % 2 === 0) {
+            scale = `scale=-2:${height}`
+          } else {
+            scale = `scale=${width + 1}:-2`
+          }
+        }
+
+        ffmpegArgs.push(
+          '-f', 'lavfi', '-i', `color=c=black:size=${width}x${height}`,
+          '-f', 'image2pipe', '-c:v', 'png', '-r', `${fps}`, '-i', '-',
+          '-filter_complex', `[0:v][1:v]overlay[o];[o]${scale}:flags=bicubic[out]`,
+          '-map', '[out]',
+          '-c:v', 'libx264',
+          '-profile:v', ffmpegOptions.profileVideo,
+          '-preset', ffmpegOptions.preset,
+          '-crf', ffmpegOptions.crf,
+          '-movflags', 'faststart',
+          '-pix_fmt', 'yuv420p'
+        )
+      }
+
+      ffmpegArgs.push(
         '-frames:v', `${numOutputFrames}`,
         '-an', output
-      ]
+      )
 
       console.log(ffmpegArgs.join(' '))
 
@@ -356,7 +372,7 @@ ${inject.body || ''}
       break
     }
 
-    if (isMp4) {
+    if (isApng || isMp4) {
       if (ffmpegStdin.writable) {
         ffmpegStdin.write(screenshot)
       }
@@ -374,8 +390,8 @@ ${inject.body || ''}
     spinnerR.succeed()
   }
 
-  if (isMp4) {
-    const spinnerF = !quiet && ora(`Generating mp4 with FFmpeg`).start()
+  if (isApng || isMp4) {
+    const spinnerF = !quiet && ora(`Generating ${isApng ? 'animated png' : 'mp4'} with FFmpeg`).start()
 
     ffmpegStdin.end()
     await ffmpegP
