@@ -355,9 +355,9 @@ ${inject.body || ''}
     })
   }
 
-  for (let frame = 1; frame <= numFrames; ++frame) {
+  for (let frame = 0; frame < numFrames; ++frame) {
     const frameOutputPath = isMultiFrame
-      ? sprintf(tempOutput, frame)
+      ? sprintf(tempOutput, frame + 1)
       : tempOutput
 
     // eslint-disable-next-line no-undef
