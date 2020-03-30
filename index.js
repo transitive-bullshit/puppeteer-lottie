@@ -209,6 +209,7 @@ module.exports = async (opts) => {
 
   ${inject.head || ''}
   ${injectLottie}
+  ${fontHeader}
 
   <style>
 * {
