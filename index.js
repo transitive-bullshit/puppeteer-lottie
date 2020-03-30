@@ -51,6 +51,8 @@ const injectLottie = `
  * @param {object} [opts.puppeteerOptions] - Optional puppeteer launch settings
  * @param {object} [opts.gifskiOptions] - Optional gifski settings (only for GIF outputs)
  * @param {object} [opts.style={}] - Optional JS [CSS styles](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference) to apply to the animation container
+ * @param {string} [opts.loadFontFamily] - Optional font family to load with fontfaceobserver
+ * @param {boolean} [opts.loadGoogleFont=false] - Whether or not to load and wait for `opts.style.fontFamily` as one or more google fonts
  * @param {object} [opts.inject={}] - Optionally injects arbitrary string content into the head, style, or body elements.
  * @param {string} [opts.inject.head] - Optionally injected into the document <head>
  * @param {string} [opts.inject.style] - Optionally injected into a <style> tag within the document <head>
@@ -73,6 +75,8 @@ module.exports = async (opts) => {
     renderer = 'svg',
     rendererSettings = { },
     style = { },
+    loadFontFamily = undefined,
+    loadGoogleFont = false,
     inject = { },
     puppeteerOptions = { },
     ffmpegOptions = {
@@ -172,6 +176,31 @@ module.exports = async (opts) => {
 
   width = width | 0
   height = height | 0
+  
+  const { fontFamily = '', fontWeight = '' } = style
+
+  if (loadGoogleFont && !fontFamily) {
+    throw new Error('valid style.fontFamily required when loading google font')
+  }
+
+  const fonts = loadFontFamily
+    ? [ loadFontFamily ]
+    : loadGoogleFont
+      ? fontFamily.split(',').map((font) => font.trim())
+      : [ ]
+
+  const fontHeader = loadFontFamily
+    ? observer : (
+      loadGoogleFont ? `
+      ${observer}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=${fonts.map((font) => `${font}:${fontWeight}`.replace(/ /g, '+')).join('|')}">
+    ` : ''
+    )
+
+  const fontsToLoad = fonts.map((font) => `new FontFaceObserver('${font}')`)
+  const fontLoader = fontsToLoad.length
+    ? `Promise.all([ ${fontsToLoad.join(', ')} ].map((f) => f.load())).then(onReady);`
+    : 'document.addEventListener('DOMContentLoaded', onReady)'
 
   const html = `
 <html>
@@ -233,8 +262,8 @@ ${inject.body || ''}
     div.className = 'ready'
     document.body.appendChild(div)
   }
-
-  ${inject.onReady || `document.addEventListener('DOMContentLoaded', onReady)`}
+  
+  ${fontLoader}
 </script>
 
 </body>
