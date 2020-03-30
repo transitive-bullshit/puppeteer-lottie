@@ -200,7 +200,7 @@ module.exports = async (opts) => {
   const fontsToLoad = fonts.map((font) => `new FontFaceObserver('${font}')`)
   const fontLoader = fontsToLoad.length
     ? `Promise.all([ ${fontsToLoad.join(', ')} ].map((f) => f.load())).then(onReady);`
-    : 'document.addEventListener('DOMContentLoaded', onReady)'
+    : `document.addEventListener('DOMContentLoaded', onReady)`
 
   const html = `
 <html>
