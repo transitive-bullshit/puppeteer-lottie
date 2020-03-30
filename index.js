@@ -22,6 +22,13 @@ const injectLottie = `
 </script>
 `
 
+const observerScript = fs.readFileSync(path.join(__dirname, 'lib', 'fontfaceobserver.standalone.js'), 'utf8')
+const observer = `
+<script>
+  ${observerScript}
+</script>
+`
+
 /**
  * Renders the given Lottie animation via Puppeteer.
  *
