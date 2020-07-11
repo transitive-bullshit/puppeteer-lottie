@@ -318,7 +318,8 @@ ${inject.body || ''}
           '-preset', ffmpegOptions.preset,
           '-crf', ffmpegOptions.crf,
           '-movflags', 'faststart',
-          '-pix_fmt', 'yuv420p'
+          '-pix_fmt', 'yuv420p',
+          '-r', fps
         )
       }
 
