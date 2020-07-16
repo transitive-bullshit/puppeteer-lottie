@@ -13,7 +13,7 @@ const { sprintf } = require('sprintf-js')
 
 const { cssifyObject } = require('css-in-js-utils')
 
-const lottieScript = fs.readFileSync(path.join(__dirname, 'lib', 'lottie.min.js'), 'utf8')
+const lottieScript = fs.readFileSync(require.resolve('lottie-web/build/player/lottie.min'), 'utf8')
 
 const injectLottie = `
 <script>
