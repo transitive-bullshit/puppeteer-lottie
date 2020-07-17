@@ -96,6 +96,7 @@ Type: `function (opts): Promise`
     -   `opts.width` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output width
     -   `opts.height` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output height
     -   `opts.jpegQuality` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** JPEG quality for frames (does nothing if using png) (optional, default `90`)
+    -   `opts.fps` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output fps
     -   `opts.quiet` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Set to true to disable console output (optional, default `false`)
     -   `opts.deviceScaleFactor` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Window device scale factor (optional, default `1`)
     -   `opts.renderer` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Which lottie-web renderer to use (optional, default `'svg'`)
