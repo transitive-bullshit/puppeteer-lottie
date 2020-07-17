@@ -39,6 +39,7 @@
     "css-in-js-utils": "^3.0.2",
     "execa": "^1.0.0",
     "fs-extra": "^8.1.0",
+    "lottie-web": "^5.7.0",
     "ora": "^4.0.3",
     "ow": "^0.17.0",
     "pluralize": "^7.0.0",
