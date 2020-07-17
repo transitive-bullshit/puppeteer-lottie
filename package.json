@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-lottie",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Renders Lottie animations via Puppeteer to image, GIF, or MP4.",
   "main": "index.js",
   "repository": "transitive-bullshit/puppeteer-lottie",
