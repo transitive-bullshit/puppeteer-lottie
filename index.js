@@ -54,6 +54,8 @@ const injectLottie = `
  * @param {string} [opts.inject.style] - Optionally injected into a <style> tag within the document <head>
  * @param {string} [opts.inject.body] - Optionally injected into the document <body>
  * @param {object} [opts.browser] - Optional puppeteer instance to reuse
+ * @param {object} [opts.startFrame] - Optional lottie-web initialSegment set segment for exporting specific frame
+ * @param {object} [opts.endFrame] - Optional lottie-web initialSegment set segment for exporting specific frame
  *
  * @return {Promise}
  */
@@ -69,6 +71,8 @@ module.exports = async (opts) => {
     rendererSettings = { },
     style = { },
     inject = { },
+    startFrame = 0,
+    startFrame = 1000000,
     puppeteerOptions = { },
     ffmpegOptions = {
       crf: 20,
@@ -217,7 +221,8 @@ ${inject.body || ''}
       loop: false,
       autoplay: false,
       rendererSettings: ${JSON.stringify(rendererSettings)},
-      animationData
+      animationData,
+      initialSegment:[${startFrame},${endFrame}+1]  //By default startframe=0 and endframe=1000000
     })
 
     duration = animation.getDuration()
