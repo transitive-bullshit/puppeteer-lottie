@@ -41,6 +41,7 @@ const injectLottie = `
  * @param {string} [opts.path] - Relative path to the JSON file containing animation data
  * @param {number} [opts.width] - Optional output width
  * @param {number} [opts.height] - Optional output height
+ * @param {number} [opts.frame] - Optional specific frame to output
  * @param {object} [opts.jpegQuality=90] - JPEG quality for frames (does nothing if using png)
  * @param {object} [opts.quiet=false] - Set to true to disable console output
  * @param {number} [opts.deviceScaleFactor=1] - Window device scale factor
@@ -83,7 +84,8 @@ module.exports = async (opts) => {
 
   let {
     width = undefined,
-    height = undefined
+    height = undefined,
+    frame = undefined
   } = opts
 
   ow(output, ow.string.nonEmpty, 'output')
@@ -146,12 +148,18 @@ module.exports = async (opts) => {
   }
 
   const fps = ~~lottieData.fr
+  const outPoint = ~~lottieData.op
   const { w = 640, h = 480 } = lottieData
   const aR = w / h
 
   ow(fps, ow.number.integer.positive, 'animationData.fr')
+  ow(outPoint, ow.number.integer.positive, 'animationData.op')
   ow(w, ow.number.integer.positive, 'animationData.w')
   ow(h, ow.number.integer.positive, 'animationData.h')
+
+  if (frame && (outPoint > frame || frame < 0)) {
+    throw new Error('Specified frame is outside animation runtime')
+  }
 
   if (!(width && height)) {
     if (width) {
@@ -356,26 +364,35 @@ ${inject.body || ''}
     })
   }
 
-  for (let frame = 0; frame < numFrames; ++frame) {
-    const frameOutputPath = isMultiFrame
-      ? sprintf(tempOutput, frame + 1)
-      : tempOutput
-
+  if (frame) {
     // eslint-disable-next-line no-undef
     await page.evaluate((frame) => animation.goToAndStop(frame, true), frame)
-    const screenshot = await rootHandle.screenshot({
-      path: isMp4 ? undefined : frameOutputPath,
+    await rootHandle.screenshot({
+      path: tempOutput,
       ...screenshotOpts
     })
+  } else {
+    for (let currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
+      const frameOutputPath = isMultiFrame
+        ? sprintf(tempOutput, currentFrame + 1)
+        : tempOutput
 
-    // single screenshot
-    if (!isMultiFrame) {
-      break
-    }
+      // eslint-disable-next-line no-undef
+      await page.evaluate((currentFrame) => animation.goToAndStop(currentFrame, true), currentFrame)
+      const screenshot = await rootHandle.screenshot({
+        path: isMp4 ? undefined : frameOutputPath,
+        ...screenshotOpts
+      })
 
-    if (isApng || isMp4) {
-      if (ffmpegStdin.writable) {
-        ffmpegStdin.write(screenshot)
+      // single screenshot
+      if (!isMultiFrame) {
+        break
+      }
+
+      if (isApng || isMp4) {
+        if (ffmpegStdin.writable) {
+          ffmpegStdin.write(screenshot)
+        }
       }
     }
   }

@@ -28,6 +28,23 @@ test('bodymovin.json => single frame png', async (t) => {
   await fs.remove(output)
 })
 
+test('bodymovin.json => single specific frame png', async (t) => {
+  const output = tempy.file({ extension: 'png' })
+
+  await renderLottie({
+    path: bodymovin,
+    quiet: true,
+    frame: 103,
+    output
+  })
+
+  const image = imageSize(output)
+  t.is(image.width, 1820)
+  t.is(image.height, 275)
+
+  await fs.remove(output)
+})
+
 test('bodymovin.json => single frame jpg scale=640:-1', async (t) => {
   const output = tempy.file({ extension: 'jpg' })
 

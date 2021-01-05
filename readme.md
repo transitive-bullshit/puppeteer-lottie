@@ -58,6 +58,13 @@ await renderLottie({
   path: 'fixtures/bodymovin.json',
   output: 'preview.jpg'
 })
+
+// Render a single frame of the animation as a JPEG image
+await renderLottie({
+  path: 'fixtures/bodymovin.json',
+  output: 'preview.jpg',
+  frame: 12,
+})
 ```
 
 #### Output Size
