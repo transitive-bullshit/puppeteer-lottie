@@ -54,7 +54,7 @@ const injectLottie = `
  * @param {string} [opts.inject.style] - Optionally injected into a <style> tag within the document <head>
  * @param {string} [opts.inject.body] - Optionally injected into the document <body>
  * @param {object} [opts.browser] - Optional puppeteer instance to reuse
- * @param {object} [opts.progress] - Optional callback to report rendering progress, will be called with the following parametersL (frame, totalFrames)
+ * @param {object} [opts.progress] - Optional callback to report rendering progress, will be called with the following parameters: (frame, totalFrames)
  * @return {Promise}
  */
 module.exports = async (opts) => {
