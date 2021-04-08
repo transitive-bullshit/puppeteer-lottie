@@ -118,8 +118,9 @@ module.exports = async (opts) => {
   const isMp4 = (ext === 'mp4')
   const isPng = (ext === 'png')
   const isJpg = (ext === 'jpg' || ext === 'jpeg')
+  const isSvg = (ext === 'svg')
 
-  if (!(isApng || isGif || isMp4 || isPng || isJpg)) {
+  if (!(isApng || isGif || isMp4 || isPng || isJpg || isSvg)) {
     throw new Error(`Unsupported output format "${output}"`)
   }
 
@@ -362,6 +363,13 @@ ${inject.body || ''}
       ? sprintf(tempOutput, frame + 1)
       : tempOutput
 
+    if (isSvg) {
+      await page.evaluate((frame) => animation.goToAndStop(frame, true), frame)
+      const aHandle = await page.evaluateHandle(() => document)
+      const resultHandle = await page.evaluateHandle(document => document.querySelector('#root').innerHTML, aHandle);
+      fs.writeFileSync(frameOutputPath, await resultHandle.jsonValue()  )
+      continue;
+    }
     // eslint-disable-next-line no-undef
     await page.evaluate((frame) => animation.goToAndStop(frame, true), frame)
     const screenshot = await rootHandle.screenshot({
