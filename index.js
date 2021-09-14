@@ -149,6 +149,7 @@ module.exports = async (opts) => {
 
   const fps = ~~lottieData.fr
   const outPoint = ~~lottieData.op
+  const inPoint = ~~lottieData.ip
   const { w = 640, h = 480 } = lottieData
   const aR = w / h
 
@@ -157,7 +158,7 @@ module.exports = async (opts) => {
   ow(w, ow.number.integer.positive, 'animationData.w')
   ow(h, ow.number.integer.positive, 'animationData.h')
 
-  if (frame && (outPoint > frame || frame < 0)) {
+  if (frame && (frame > outPoint || frame < inPoint)) {
     throw new Error('Specified frame is outside animation runtime')
   }
 
