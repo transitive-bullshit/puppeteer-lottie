@@ -412,7 +412,7 @@ ${inject.body || ''}
     const escapePath = arg => arg.replace(/(\s+)/g, '\\$1')
 
     const params = [
-      '-o', escapePath(output),
+      '-o', `"${escapePath(output)}"`,
       '--fps', Math.min(gifskiOptions.fps || fps, 50), // most of viewers do not support gifs with FPS > 50
       gifskiOptions.fast && '--fast',
       '--quality', gifskiOptions.quality,
