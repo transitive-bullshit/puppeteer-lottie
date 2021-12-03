@@ -39,6 +39,7 @@ const injectLottie = `
  * @param {string} opts.output - Path or pattern to store result
  * @param {object} [opts.animationData] - JSON exported animation data
  * @param {string} [opts.path] - Relative path to the JSON file containing animation data
+ * @param {string} [opts.background] - Optional background color
  * @param {number} [opts.width] - Optional output width
  * @param {number} [opts.height] - Optional output height
  * @param {object} [opts.jpegQuality=90] - JPEG quality for frames (does nothing if using png)
@@ -62,6 +63,7 @@ module.exports = async (opts) => {
     output,
     animationData = undefined,
     path: animationPath = undefined,
+    background = 'transparent',
     jpegQuality = 90,
     quiet = false,
     deviceScaleFactor = 1,
@@ -184,7 +186,7 @@ module.exports = async (opts) => {
 }
 
 body {
-  background: transparent;
+  background: ${background};
 
   ${width ? 'width: ' + width + 'px;' : ''}
   ${height ? 'height: ' + height + 'px;' : ''}
