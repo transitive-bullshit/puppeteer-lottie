@@ -93,6 +93,7 @@ Type: `function (opts): Promise`
     -   `opts.output` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Path or pattern to store result
     -   `opts.animationData` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** JSON exported animation data
     -   `opts.path` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Relative path to the JSON file containing animation data
+    -   `opts.backgound` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Optional background color
     -   `opts.width` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output width
     -   `opts.height` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Optional output height
     -   `opts.jpegQuality` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** JPEG quality for frames (does nothing if using png) (optional, default `90`)
